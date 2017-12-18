@@ -17,6 +17,7 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ import java.util.List;
 public class GameActivity extends BaseActivity {
     private static final int IMAGE = 1;
     private static final int  CAMERA_WITH_DATA= 12;
+    public static final int MAX_TIME = 200;
     public int level=0;
     public Handler handler = new Handler();
     RecyclerView rcv_game;
@@ -54,7 +56,7 @@ public class GameActivity extends BaseActivity {
     HorizontalselectedView hd_game;
     TextView tv_left;
     TextView tv_right;
-
+    ImageView iv_state;
 
 
     @Override
@@ -67,6 +69,28 @@ public class GameActivity extends BaseActivity {
         tv_step = findViewById(R.id.tv_game_step);
         tv_ablum = findViewById(R.id.tv_album_select);
         tv_shot = findViewById(R.id.tv_shot);
+        iv_state = findViewById(R.id.iv_game_state);
+        iv_state.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (gameAdapter==null)return;
+                iv_state.setClickable(false);
+                if (gameAdapter.isStop){
+                    gameAdapter.isStop = false;
+                    iv_state.setImageResource(R.mipmap.stop);
+                    time();
+                }else {
+                    gameAdapter.isStop = true;
+                    iv_state.setImageResource(R.mipmap.begin);
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        iv_state.setClickable(true);
+                    }
+                }, 1010);
+            }
+        });
         tv_ablum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -167,12 +191,16 @@ public class GameActivity extends BaseActivity {
     public void beginGame(GameAdapter adapter){
         step = 0;
         time = 0;
+        tv_time.setText("计时：0秒");
+        tv_step.setText("计步：0步");
+        iv_state.setImageResource(R.mipmap.begin);
         handler.removeCallbacks(timer);
         rcv_game.setLayoutManager(new GridLayoutManager(GameActivity.this,level));
         if (gameAdapter!=null){
             gameAdapter.recycle();
         }
         gameAdapter =adapter;
+        gameAdapter.isStop = true;
         rcv_game.setAdapter(gameAdapter);
         gameAdapter.setListener(new GameAdapter.CountStepListener() {
             @Override
@@ -211,7 +239,6 @@ public class GameActivity extends BaseActivity {
                 normalDialog.show();
             }
         });
-        time();
     }
 
     public void showRecord(){
@@ -247,7 +274,10 @@ public class GameActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        gameAdapter.recycle();
+        if (gameAdapter!=null){
+            gameAdapter.recycle();
+        }
+
     }
     TimeRunnable timer = new TimeRunnable();
 
@@ -259,8 +289,37 @@ public class GameActivity extends BaseActivity {
 
         @Override
         public void run() {
+            if (time>MAX_TIME){
+                gameAdapter.isGameOver = true;
+                final AlertDialog.Builder normalDialog =
+                        new AlertDialog.Builder(GameActivity.this);
+                normalDialog.setTitle("游戏结束");
+                normalDialog.setMessage("您的时间已经超出限制，游戏失败");
+                normalDialog.setPositiveButton("继续挑战",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                step = 0;
+                                time = 0;
+                                tv_time.setText("计时：0秒");
+                                tv_step.setText("计步：0步");
+                                iv_state.setImageResource(R.mipmap.begin);
+                                gameAdapter.continueGame();
+                                gameAdapter.isStop = true;
+                            }
+                        });
+                normalDialog.setNegativeButton("取消",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+
+                normalDialog.show();
+                return;
+            }
             tv_time.setText("计时："+(++time)+"秒");
-            if (!gameAdapter.isGameOver){
+            if (!gameAdapter.isGameOver&&!gameAdapter.isStop){
                 time();
             }
         }

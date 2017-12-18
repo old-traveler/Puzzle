@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.puzzle.ui.activity.PassGameActivity"
+    android:background="@color/background"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:background="@color/color_primary"
+        android:id="@+id/tb_game"
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+        <TextView
+            android:text=""
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:id="@+id/tv_game_title"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </android.support.v7.widget.Toolbar>
+
+    <TextView
+        android:layout_marginTop="30dp"
+        android:id="@+id/tv_game_time"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="剩余时间：100秒"
+        android:layout_centerVertical="true"
+        android:background="@drawable/time_background"
+        android:layout_width="200dp"
+        android:layout_height="50dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:clipChildren="false"
+        android:id="@+id/rcv_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/iv_game_state"
+            android:layout_marginBottom="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/begin"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+    </RelativeLayout>
+
+</LinearLayout>

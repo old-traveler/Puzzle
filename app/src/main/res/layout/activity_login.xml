@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true">
+
+
+    <ImageView
+        android:id="@+id/long_img"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-3dp"
+        android:layout_marginRight="-160dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/login"/>
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="138dp"
+        android:src="@mipmap/long_logo"
+        android:layout_marginTop="80dp"/>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@drawable/time_background"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
+        android:layout_marginTop="240dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/linearLayout"
+        >
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <ImageView
+                android:textSize="15sp"
+                android:background="@mipmap/name"
+                android:textColor="@color/black"
+                android:layout_width="20dp"
+                android:layout_height="20dp"/>
+            <EditText
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:id="@+id/et_login_username"
+                android:background="@drawable/time_background"
+                android:hint="请输入昵称"
+                android:layout_width="match_parent"
+                android:layout_height="36dp" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="0.5px"/>
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <ImageView
+                android:textSize="15sp"
+                android:background="@mipmap/password"
+                android:textColor="@color/black"
+                android:layout_width="20dp"
+                android:layout_height="20dp" />
+            <EditText
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:inputType="textPassword"
+                android:id="@+id/et_login_password"
+                android:hint="请输入密码"
+                android:background="@drawable/time_background"
+                android:layout_width="match_parent"
+                android:layout_height="36dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/long_linear"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="140dp"
+        android:layout_height="50dp"
+        android:background="@drawable/time_background"
+        android:text="登录"
+        android:textColor="@color/white"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="470dp" />
+
+    <Button
+        android:id="@+id/btn_register"
+        android:layout_width="140dp"
+        android:layout_height="50dp"
+        android:background="@drawable/time_background"
+        android:text="注册"
+        android:textColor="@color/white"
+        android:layout_marginLeft="193dp"
+        android:layout_marginTop="470dp"/>
+</RelativeLayout>

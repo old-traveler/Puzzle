@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background"
     tools:context="com.puzzle.ui.activity.GameActivity"
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar
@@ -103,8 +104,14 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="30dp"
             android:background="@drawable/time_background"
-            android:layout_width="120dp"
+            android:layout_width="100dp"
             android:layout_height="50dp"/>
+        <ImageView
+            android:id="@+id/iv_game_state"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/begin"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
         <TextView
             android:id="@+id/tv_shot"
             android:gravity="center"
@@ -113,7 +120,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="30dp"
             android:background="@drawable/time_background"
-            android:layout_width="120dp"
+            android:layout_width="100dp"
             android:layout_height="50dp"/>
     </RelativeLayout>
 

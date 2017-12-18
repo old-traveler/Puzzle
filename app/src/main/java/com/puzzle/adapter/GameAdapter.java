@@ -44,6 +44,8 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
 
     public boolean isTips = false;
 
+    public boolean isStop = true;
+
     public void setListener(CountStepListener listener) {
         this.listener = listener;
     }
@@ -103,7 +105,7 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
                 text= text+" "+integer;
             }
             Log.e("点击",whitePosition+"   "+position+" "+text);
-            if (isGameOver||position==whitePosition||isSwaping||isTips){
+            if (isGameOver||position==whitePosition||isSwaping||isTips||isStop){
                 return;
             }else if(position/level == whitePosition/level && Math.abs(whitePosition-position)==1){
                 Collections.swap(order,whitePosition,position);
@@ -210,7 +212,9 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
         }, 3000);
     }
 
-
-
-
+    public void continueGame(){
+        isGameOver = false;
+        initOrder();
+        notifyDataSetChanged();
+    }
 }

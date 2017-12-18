@@ -15,7 +15,7 @@
         <item>@mipmap/custom</item>
         <item>@mipmap/guess</item>
         <item>@mipmap/pass</item>
-        <item>@mipmap/battle</item>
+        <item>@mipmap/share</item>
     </string-array>
 
 </resources>

@@ -1,12 +1,19 @@
 package com.puzzle.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.Resource;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.puzzle.ui.PuzzleApplication;
 
 import java.util.ArrayList;
@@ -83,11 +90,16 @@ public class CommonUtils {
      */
     public static List<Bitmap> getPuzzleFragment(String path,int n){
         Bitmap bitmap = BitmapFactory.decodeFile(path);
-        return splitBitmap(zoomBitmap(bitmap),n);
+        return splitBitmap(zoomBitmap(bitmap,true),n);
     }
 
     public static List<Bitmap> getPuzzleFragment(Bitmap bitmap,int n){
-        return splitBitmap(zoomBitmap(bitmap),n);
+        return splitBitmap(zoomBitmap(bitmap,true),n);
+    }
+
+    public static List<Bitmap> getPuzzleFragment(Resources resource, int resId, int n){
+        Bitmap bitmap = BitmapFactory.decodeResource(resource,resId);
+        return splitBitmap(zoomBitmap(bitmap,false),n);
     }
 
 
@@ -96,7 +108,7 @@ public class CommonUtils {
      * @param bitmap
      * @return
      */
-    public static Bitmap zoomBitmap(Bitmap bitmap){
+    public static Bitmap zoomBitmap(Bitmap bitmap,boolean isRecycle){
         float width = bitmap.getWidth();
         float height = bitmap.getHeight();
         Bitmap cutBitmap = null;
@@ -108,7 +120,9 @@ public class CommonUtils {
                     ,(int)(height-width)/2,(int)width,(int)width);
         }
         width = cutBitmap.getWidth();
-        bitmap.recycle();
+        if (isRecycle){
+            bitmap.recycle();
+        }
         float scale = (getScreenWidthHeight()[0]-dip2px(MARGIN))*1.0f/width;
         Matrix matrix = new Matrix();
         matrix.postScale(scale, scale);
@@ -180,6 +194,14 @@ public class CommonUtils {
                     break;
             }
         }
+    }
+
+    public static Bundle packIntent(String type,int level,int resId){
+        Bundle bundle = new Bundle();
+        bundle.putString("type",type);
+        bundle.putInt("level",level);
+        bundle.putInt("resId",resId);
+        return bundle;
     }
 
 }

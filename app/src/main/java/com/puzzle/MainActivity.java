@@ -7,10 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import com.allenliu.circlemenuview.CircleMenuView;
 import com.puzzle.ui.activity.BaseActivity;
-import com.puzzle.view.CircleMenuLayout;
 
 public class MainActivity extends BaseActivity {
     DrawerLayout drawerLayout;
@@ -42,6 +40,7 @@ public class MainActivity extends BaseActivity {
         if (item.getItemId()==android.R.id.home){
             if (!drawerLayout.isDrawerOpen(GravityCompat.START)){
                 drawerLayout.openDrawer(GravityCompat.START);
+                return true;
             }
         }else  if (item.getItemId() == R.id.rank){
             Toast.makeText(this, "排行榜", Toast.LENGTH_SHORT).show();
