@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Puzzle</string>
+    <string name="center_name">模式选择</string>
+    <string-array name="text_main">
+        <item>挑战</item>
+        <item>擂台</item>
+        <item>自定义</item>
+        <item>盲猜</item>
+        <item>闯关</item>
+        <item>分享</item>
+    </string-array>
+    <string-array name="icon_main">
+        <item>@mipmap/battle</item>
+        <item>@mipmap/arena</item>
+        <item>@mipmap/custom</item>
+        <item>@mipmap/guess</item>
+        <item>@mipmap/pass</item>
+        <item>@mipmap/battle</item>
+    </string-array>
+
+</resources>
