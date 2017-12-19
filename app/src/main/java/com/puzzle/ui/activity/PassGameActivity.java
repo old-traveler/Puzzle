@@ -1,24 +1,40 @@
 package com.puzzle.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.puzzle.R;
 import com.puzzle.adapter.GameAdapter;
+import com.puzzle.bean.Share;
 import com.puzzle.util.CommonUtils;
 import com.puzzle.view.GameDividerItemDecoration;
+import com.zxy.tiny.callback.FileCallback;
+
+import java.io.File;
+
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UploadFileListener;
 
 public class PassGameActivity extends BaseActivity {
     public int level;
@@ -31,6 +47,9 @@ public class PassGameActivity extends BaseActivity {
     CountDownRunnable runnable;
     TextView tv_game_title;
     public int tipsSize = 3;
+    String type;
+    LinearLayout layout;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +57,13 @@ public class PassGameActivity extends BaseActivity {
         setContentView(R.layout.activity_pass_game);
         setToolBar(R.id.tb_game);
         handler = new Handler();
+        progressDialog = new ProgressDialog(this);
         runnable = new CountDownRunnable();
         initView();
     }
 
     private void initView() {
+        layout = findViewById(R.id.layout);
         rcv_game = findViewById(R.id.rcv_game);
         rcv_game.addItemDecoration(new GameDividerItemDecoration(
                 PassGameActivity.this,2,R.color.white));
@@ -69,31 +90,73 @@ public class PassGameActivity extends BaseActivity {
                 }, 1010);
             }
         });
-        Bundle bundle = getIntent().getExtras();
-        String type = bundle.getString("type");
+        final Bundle bundle = getIntent().getExtras();
+        type = bundle.getString("type");
+        Log.e("TAG",type);
         level = bundle.getInt("level");
         tv_game_title.setText("第"+level+"关");
-        int n = Math.min(6,level/2+2);
-        int resId = bundle.getInt("resId");
-        rcv_game.setLayoutManager(new GridLayoutManager(PassGameActivity.this,n));
-        gameAdapter = new GameAdapter(CommonUtils.getPuzzleFragment(getResources(),resId,n),n);
-        rcv_game.setAdapter(gameAdapter);
+        if (type.equals("pass")){
+            int n = Math.min(6,level/2+2);
+            int resId = bundle.getInt("resId");
+            rcv_game.setLayoutManager(new GridLayoutManager(PassGameActivity.this,n));
+            gameAdapter = new GameAdapter(CommonUtils.getPuzzleFragment(getResources(),resId,n),n);
+            rcv_game.setAdapter(gameAdapter);
+            initEvent();
+        }else if (type.equals("arena")){
+            time = bundle.getInt("time");
+            tv_time.setText("剩余时间："+time+"秒");
+            Glide.with(this).load(bundle.getString("imageUrl")).asBitmap().into(new SimpleTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                    Log.e("TAG","level:"+level);
+                    rcv_game.setLayoutManager(new GridLayoutManager(PassGameActivity.this,level));
+                    gameAdapter = new GameAdapter(CommonUtils.getPuzzleFragment(resource,false,level),level);
+
+                    rcv_game.setAdapter(gameAdapter);
+                    initEvent();
+                }
+            });
+        }
+
+
+
+    }
+
+    public void initEvent(){
         gameAdapter.setListener(new GameAdapter.CountStepListener() {
             @Override
             public void onStep() {
 
             }
-
             @Override
             public void gameOver() {
                 final AlertDialog.Builder normalDialog =
                         new AlertDialog.Builder(PassGameActivity.this);
-                normalDialog.setTitle("恭喜您成功闯关！");
-                normalDialog.setMessage("获得"+(time*level*tipsSize)+"积分");
+                if (type.equals("pass")){
+                    normalDialog.setTitle("恭喜您成功闯关！");
+                    normalDialog.setMessage("获得"+(time*level*tipsSize)+"积分");
+                }else if (type.equals("arena")){
+                    normalDialog.setTitle("恭喜您夺擂成功！");
+                    normalDialog.setMessage("获得"+getIntent().getExtras().getInt("integral")+"积分");
+                }
                 normalDialog.setPositiveButton("确定",
+                        null);
+                normalDialog.setNeutralButton("分享",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                String path = CommonUtils.saveBitmap(PassGameActivity
+                                        .this,CommonUtils.loadBitmapFromViewBySystem(layout));
+                                CommonUtils.compressShare(path, new FileCallback() {
+                                    @Override
+                                    public void callback(boolean isSuccess, String outfile, Throwable t) {
+                                        if (isSuccess){
+                                            upload(outfile);
+                                        }else {
+                                            Toast.makeText(PassGameActivity.this, "压缩失败", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
 
                             }
                         });
@@ -104,13 +167,60 @@ public class PassGameActivity extends BaseActivity {
                                 finish();
                             }
                         });
-
+                iv_state.setClickable(false);
                 normalDialog.show();
             }
         });
-        if (type.equals("pass")){
+    }
 
-        }
+    private void showCustomizeDialog(final String path) {
+        AlertDialog.Builder customizeDialog =
+                new AlertDialog.Builder(this);
+        final View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_customize,null);
+        customizeDialog.setTitle("请输入分享内容");
+        customizeDialog.setView(dialogView);
+        customizeDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText edit_text = dialogView.findViewById(R.id.edit_text);
+                        Share share = new Share();
+                        share.setContent(edit_text.getText().toString());
+                        share.setUser(CommonUtils.getUser());
+                        share.setImageUrl(path);
+                        progressDialog.show();
+                        share.save(new SaveListener<String>() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                progressDialog.dismiss();
+                                if (e==null){
+                                    Toast.makeText(PassGameActivity.this, "分享成功", Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(PassGameActivity.this, "分享失败", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                });
+        customizeDialog.show();
+
+    }
+
+    private void upload(String path){
+        progressDialog.show();
+        final BmobFile file = new BmobFile(new File(path));
+        file.upload(new UploadFileListener() {
+            @Override
+            public void done(BmobException e) {
+                progressDialog.dismiss();
+                if (e==null){
+                    showCustomizeDialog(file.getFileUrl());
+                }else {
+                    Toast.makeText(PassGameActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public void countDown(){
@@ -148,15 +258,24 @@ public class PassGameActivity extends BaseActivity {
             }else if (time==1){
                 tv_time.setText("剩余时间："+0+"秒");
                 gameAdapter.isGameOver =true;
-                final AlertDialog.Builder normalDialog =
+                AlertDialog.Builder normalDialog =
                         new AlertDialog.Builder(PassGameActivity.this);
-                normalDialog.setTitle("闯关失败");
-                normalDialog.setMessage("您在规定时间内未能完成任务");
+                if (type.equals("pass")){
+                    normalDialog.setTitle("闯关失败");
+                    normalDialog.setMessage("您在规定时间内未能完成任务");
+                }else if(type.equals("arena")){
+                    normalDialog.setTitle("夺擂失败");
+                    normalDialog.setMessage("您在规定时间内未能完成任务");
+                }
                 normalDialog.setPositiveButton("继续挑战",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                time=100;
+                                if (type.equals("pass")){
+                                    time=100;
+                                }else if(type.equals("arena")){
+                                    time = getIntent().getExtras().getInt("time");
+                                }
                                 tv_time.setText("剩余时间："+time+"秒");
                                 gameAdapter.continueGame();
                                 gameAdapter.isStop = true;
@@ -167,6 +286,7 @@ public class PassGameActivity extends BaseActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                iv_state.setClickable(false);
                             }
                         });
 
@@ -174,6 +294,8 @@ public class PassGameActivity extends BaseActivity {
             }
         }
     }
+
+
 
     @Override
     protected void onDestroy() {

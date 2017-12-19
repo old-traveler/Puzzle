@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/head"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+        <TextView
+            android:id="@+id/tv_share_name"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="70dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_share_time"
+            android:layout_marginTop="35dp"
+            android:layout_marginLeft="70dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.sackcentury.shinebuttonlib.ShineButton
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:src="@android:color/darker_gray"
+            android:id="@+id/sb_like"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            app:btn_color="#bebebe"
+            app:btn_fill_color="@android:color/holo_blue_dark"
+            app:allow_random_color="false"
+            app:siShape="@raw/heart"/>
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/tv_share_content"
+        android:layout_marginTop="10dp"
+        android:textSize="14sp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:background="@color/white_gray"
+        android:id="@+id/iv_share_url"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:scaleType="centerCrop"
+        android:layout_width="140dp"
+        android:layout_height="240dp" />
+    <View
+        android:background="@color/background"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+</LinearLayout>

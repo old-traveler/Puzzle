@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context="com.puzzle.ui.activity.NewArenaActivity"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:background="@color/color_primary"
+        android:id="@+id/tb_new_arena"
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+        <TextView
+            android:text="建立擂台"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:id="@+id/tv_game_title"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </android.support.v7.widget.Toolbar>
+    <LinearLayout
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <EditText
+            android:inputType="number"
+            android:id="@+id/et_arena_time"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:hint="设置时间(秒)"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <EditText
+            android:inputType="number"
+            android:id="@+id/et_arena_integral"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:hint="设置积分"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <EditText
+            android:inputType="number"
+            android:id="@+id/et_arena_level"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:hint="设置难度(2-6)"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:layout_width="320dp"
+        android:layout_height="320dp">
+        <ImageView
+            android:id="@+id/iv_arena_image"
+            android:scaleType="centerCrop"
+            android:background="@color/toolbar_color"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/tv_arena_tips"
+            android:textSize="17sp"
+            android:layout_centerInParent="true"
+            android:text="点击选择照片"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+    <Button
+        android:id="@+id/btn_publish"
+        android:text="发布"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center"
+        android:background="@drawable/time_background"
+        android:layout_width="120dp"
+        android:layout_height="50dp" />
+</LinearLayout>

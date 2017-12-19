@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
     tools:context="com.puzzle.ui.activity.GameActivity"
+    android:id="@+id/ll_game"
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar
         android:background="@color/color_primary"

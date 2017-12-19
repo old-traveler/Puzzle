@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context="com.puzzle.MainActivity">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
@@ -27,10 +27,10 @@
                 android:layout_height="wrap_content" />
         </android.support.v7.widget.Toolbar>
         <com.allenliu.circlemenuview.CircleMenuView
+            android:layout_centerInParent="true"
             android:layout_marginTop="20dp"
             android:id="@+id/view"
-            android:layout_centerHorizontal="true"
-            android:layout_width="250dp"
+            android:layout_width="320dp"
             android:padding="10dp"
             app:center_text="@string/center_name"
             app:center_icon="@mipmap/mode"
@@ -44,8 +44,8 @@
             app:menu_item_background="@color/color_primary"
             app:gap_size="6dp"
             app:inside_cirle_radius="45dp"
-            android:layout_height="250dp" />
-    </LinearLayout>
+            android:layout_height="320dp" />
+    </RelativeLayout>
     <LinearLayout
         android:background="@color/background"
         android:layout_gravity="start"

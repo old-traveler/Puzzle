@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".ui.PuzzleApplication"
@@ -17,17 +18,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.GameActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity android:name=".ui.activity.GameActivity" />-->
-        <!--<activity android:name=".ui.activity.LoginActivity" />-->
-         <!--<activity android:name=".ui.activity.PassActivity"></activity>-->
-        <activity android:name=".ui.activity.PassGameActivity"></activity>
+        <activity android:name=".ui.activity.GameActivity" />
+        <activity android:name=".ui.activity.LoginActivity" />
+        <activity android:name=".ui.activity.PassActivity" />
+        <activity android:name=".ui.activity.PassGameActivity" />
+        <activity android:name=".ui.activity.ArenaActivity" />
+        <activity android:name=".ui.activity.NewArenaActivity" />
+        <activity android:name=".ui.activity.ShareActivity"></activity>
     </application>
 
 </manifest>

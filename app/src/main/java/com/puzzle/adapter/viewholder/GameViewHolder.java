@@ -22,7 +22,7 @@ public class GameViewHolder extends RecyclerView.ViewHolder{
         iv_game = itemView.findViewById(R.id.iv_game);
     }
 
-    public void loadImage(boolean isWhiteboard, Bitmap bitmap, View.OnClickListener listener){
+    public void loadImage(boolean isWhiteboard,Bitmap bitmap, View.OnClickListener listener){
         if (!isWhiteboard){
             iv_game.setImageBitmap(bitmap);
         }else {
@@ -33,5 +33,7 @@ public class GameViewHolder extends RecyclerView.ViewHolder{
         }
         iv_game.setOnClickListener(listener);
     }
+
+
 
 }

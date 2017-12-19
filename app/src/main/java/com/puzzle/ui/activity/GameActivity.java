@@ -2,6 +2,7 @@ package com.puzzle.ui.activity;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,11 +14,15 @@ import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,18 +30,26 @@ import com.example.horizontalselectedviewlibrary.HorizontalselectedView;
 import com.puzzle.R;
 import com.puzzle.adapter.GameAdapter;
 import com.puzzle.bean.CustomPuzzleRecord;
+import com.puzzle.bean.Share;
 import com.puzzle.util.CommonUtils;
 import com.puzzle.view.GameDividerItemDecoration;
+import com.zxy.tiny.callback.FileCallback;
 
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UploadFileListener;
 
 public class GameActivity extends BaseActivity {
     private static final int IMAGE = 1;
@@ -57,6 +70,10 @@ public class GameActivity extends BaseActivity {
     TextView tv_left;
     TextView tv_right;
     ImageView iv_state;
+    public String type;
+    TextView tv_game_title;
+    LinearLayout layout;
+    ProgressDialog progressDialog;
 
 
     @Override
@@ -70,6 +87,14 @@ public class GameActivity extends BaseActivity {
         tv_ablum = findViewById(R.id.tv_album_select);
         tv_shot = findViewById(R.id.tv_shot);
         iv_state = findViewById(R.id.iv_game_state);
+        tv_game_title = findViewById(R.id.tv_game_title);
+        layout = findViewById(R.id.ll_game);
+        type = getIntent().getStringExtra("type");
+        type = type == null ? "":type;
+        progressDialog = new ProgressDialog(this);
+        if (type.equals("guess")){
+            tv_game_title.setText("盲猜模式");
+        }
         iv_state.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -172,7 +197,13 @@ public class GameActivity extends BaseActivity {
             c.moveToFirst();
             int columnIndex = c.getColumnIndex(filePathColumns[0]);
             String imagePath = c.getString(columnIndex);
-            GameAdapter adapter =new GameAdapter(CommonUtils.getPuzzleFragment(imagePath,level),level);
+            GameAdapter adapter;
+            if (type.equals("guess")){
+                adapter =new GameAdapter(CommonUtils.getPuzzleFragment(imagePath,level),true,level);
+            }else {
+                adapter =new GameAdapter(CommonUtils.getPuzzleFragment(imagePath,level),level);
+            }
+
             beginGame(adapter);
         }
         if(resultCode!=RESULT_OK)
@@ -181,7 +212,13 @@ public class GameActivity extends BaseActivity {
             case CAMERA_WITH_DATA:
                 final Bitmap photo = data.getParcelableExtra("data");
                 if (photo != null) {
-                    GameAdapter adapter =new GameAdapter(CommonUtils.getPuzzleFragment(photo,level),level);
+                    GameAdapter adapter ;
+                    if (type.equals("guess")){
+                        adapter =new GameAdapter(CommonUtils.getPuzzleFragment(photo,level),true,level);
+                    }else {
+                        adapter =new GameAdapter(CommonUtils.getPuzzleFragment(photo,level),level);
+                    }
+
                     beginGame(adapter);
                 }
         }
@@ -225,6 +262,26 @@ public class GameActivity extends BaseActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                normalDialog.setNeutralButton("分享",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String path = CommonUtils.saveBitmap(GameActivity
+                                        .this,CommonUtils.loadBitmapFromViewBySystem(layout));
+                                CommonUtils.compressShare(path, new FileCallback() {
+                                    @Override
+                                    public void callback(boolean isSuccess, String outfile, Throwable t) {
+                                        if (isSuccess){
+                                            upload(outfile);
+                                        }else {
+                                            Toast.makeText(GameActivity.this, "压缩失败", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
 
                             }
                         });
@@ -324,4 +381,56 @@ public class GameActivity extends BaseActivity {
             }
         }
     }
+
+    private void showCustomizeDialog(final String path) {
+        AlertDialog.Builder customizeDialog =
+                new AlertDialog.Builder(this);
+        final View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_customize,null);
+        customizeDialog.setTitle("请输入分享内容");
+        customizeDialog.setView(dialogView);
+        customizeDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText edit_text = dialogView.findViewById(R.id.edit_text);
+                        Share share = new Share();
+                        share.setContent(edit_text.getText().toString());
+                        share.setUser(CommonUtils.getUser());
+                        share.setImageUrl(path);
+                        progressDialog.show();
+                        share.save(new SaveListener<String>() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                progressDialog.dismiss();
+                                if (e==null){
+                                    Toast.makeText(GameActivity.this, "分享成功", Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(GameActivity.this, "分享失败", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                });
+        customizeDialog.show();
+
+    }
+
+    private void upload(String path){
+        progressDialog.show();
+        final BmobFile file = new BmobFile(new File(path));
+        file.upload(new UploadFileListener() {
+            @Override
+            public void done(BmobException e) {
+                progressDialog.dismiss();
+                if (e==null){
+                    showCustomizeDialog(file.getFileUrl());
+                }else {
+                    Toast.makeText(GameActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
 }

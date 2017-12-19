@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    android:background="@color/small_white"
+    android:gravity="center_horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:id="@+id/iv_item_arena"
+        android:layout_gravity="center"
+        android:src="@mipmap/level_1"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="180dp" />
+    <RelativeLayout
+        android:layout_width="160dp"
+        android:layout_height="50dp">
+        <TextView
+            android:id="@+id/tv_item_time"
+            android:textColor="@color/background"
+            android:textSize="14sp"
+            android:text="时间：100"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_item_level"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentBottom="true"
+            android:textColor="@color/background"
+            android:textSize="14sp"
+            android:text="难度：n"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_item_integral"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentRight="true"
+            android:textColor="#f90404"
+            android:textSize="14sp"
+            android:text="积分：100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_publish_time"
+            android:textColor="@color/background"
+            android:textSize="15sp"
+            android:text="8月9日"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+</LinearLayout>

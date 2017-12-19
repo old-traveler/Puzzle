@@ -1,6 +1,7 @@
 package com.puzzle.adapter;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,6 +47,12 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
 
     public boolean isStop = true;
 
+    public boolean isGuess = false;
+
+    public List<Integer> blank;
+
+    private Bitmap blankBitmap;
+
     public void setListener(CountStepListener listener) {
         this.listener = listener;
     }
@@ -54,9 +61,22 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
         this.list = list;
         this.level = level;
         initOrder();
+        Log.e("TAG","level:"+list.size());
         width = list.get(0).getWidth();
     }
 
+    public GameAdapter(List<Bitmap> list,boolean isGuess,int level){
+        this.list = list;
+        this.level = level;
+        this.isGuess = isGuess;
+        initOrder();
+        Log.e("TAG","level:"+list.size());
+        width = list.get(0).getWidth();
+    }
+
+    /**
+     * 初始化拼图顺序
+     */
     private void initOrder() {
         order = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -69,6 +89,31 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
                 break;
             }
         }
+
+        blank = new ArrayList<>();
+        if (isGuess){
+            if (blankBitmap==null&&list!=null){
+                blankBitmap = BitmapFactory.decodeResource(PuzzleApplication
+                        .getContext().getResources(),R.mipmap.blank);
+                blankBitmap = CommonUtils.zoomImage(blankBitmap,list
+                        .get(0).getWidth(),list.get(0).getWidth());
+            }
+            int blankSize;
+            if (level<4){
+                blankSize=1;
+            }else {
+                blankSize=2;
+            }
+            for (int i = 0; i < blankSize; i++) {
+                Random random = new Random();
+                int temp = random.nextInt(list.size());
+                if (blank.contains(temp)||temp==whitePosition){
+                    i--;
+                }else {
+                    blank.add(temp);
+                }
+            }
+        }
     }
 
     @Override
@@ -79,8 +124,14 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
 
     @Override
     public void onBindViewHolder(GameViewHolder holder, int position) {
-        holder.loadImage(position==whitePosition
-                ,list.get(order.get(position)),new PuzzleOnClickListener(position));
+        if (isGuess){
+            holder.loadImage(position==whitePosition
+                    ,blank.contains(order.get(position)) ? blankBitmap : list.get(order
+                            .get(position)),new PuzzleOnClickListener(position));
+        }else {
+            holder.loadImage(position==whitePosition
+                    ,list.get(order.get(position)),new PuzzleOnClickListener(position));
+        }
     }
 
     @Override
@@ -113,7 +164,6 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
                 whitePosition = position;
                 checkResult();
             }else if (position%level == whitePosition%level && Math.abs(whitePosition-position)==level){
-
                 Collections.swap(order,whitePosition,position);
                 swap(view,position-whitePosition>0?1:2);
                 whitePosition = position;
@@ -126,6 +176,9 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
             Log.e("点击",whitePosition+"   "+position+" "+text1);
         }
 
+        /**
+         * 检查是否正确完成拼图
+         */
         private void checkResult() {
             boolean isOver = true;
             for (int i = 0; i < order.size(); i++) {
@@ -143,6 +196,11 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
 
     }
 
+    /**
+     * 拼图移动并进行数据交换
+     * @param view
+     * @param flag
+     */
     public void swap(View view,int flag){
         isSwaping = true;
         listener.onStep();
@@ -174,6 +232,9 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
         });
     }
 
+    /**
+     * 游戏计步监听
+     */
     public interface CountStepListener{
         void onStep();
         void gameOver();
@@ -187,6 +248,9 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
         }
     }
 
+    /**
+     * 游戏提示
+     */
     public void tips(){
         if(list==null||list.size()==0){
             return;
@@ -212,6 +276,9 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
         }, 3000);
     }
 
+    /**
+     * 继续游戏
+     */
     public void continueGame(){
         isGameOver = false;
         initOrder();

@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:clipChildren="false">
     <ImageView
+        android:scaleType="centerCrop"
         android:id="@+id/iv_game"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

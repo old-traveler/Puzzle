@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     tools:context="com.puzzle.ui.activity.PassGameActivity"
     android:background="@color/background"
+    android:id="@+id/layout"
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar
         android:background="@color/color_primary"
