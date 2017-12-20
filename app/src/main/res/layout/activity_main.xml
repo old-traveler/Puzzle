@@ -65,7 +65,7 @@
                 android:layout_height="90dp" />
             <TextView
                 android:id="@+id/tv_name"
-                android:text="小明"
+                android:text="未登录"
                 android:textSize="18sp"
                 android:textColor="@color/white"
                 android:layout_marginBottom="10dp"

@@ -151,11 +151,6 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
 
         @Override
         public void onClick(View view) {
-            String text ="";
-            for (Integer integer : order) {
-                text= text+" "+integer;
-            }
-            Log.e("点击",whitePosition+"   "+position+" "+text);
             if (isGameOver||position==whitePosition||isSwaping||isTips||isStop){
                 return;
             }else if(position/level == whitePosition/level && Math.abs(whitePosition-position)==1){
@@ -169,11 +164,6 @@ public class GameAdapter  extends RecyclerView.Adapter<GameViewHolder>  {
                 whitePosition = position;
                 checkResult();
             }
-            String text1 ="";
-            for (Integer integer : order) {
-                text1= text1+" "+integer;
-            }
-            Log.e("点击",whitePosition+"   "+position+" "+text1);
         }
 
         /**

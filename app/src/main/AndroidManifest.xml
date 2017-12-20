@@ -31,7 +31,8 @@
         <activity android:name=".ui.activity.PassGameActivity" />
         <activity android:name=".ui.activity.ArenaActivity" />
         <activity android:name=".ui.activity.NewArenaActivity" />
-        <activity android:name=".ui.activity.ShareActivity"></activity>
+        <activity android:name=".ui.activity.ShareActivity" />
+        <activity android:name=".ui.activity.BattleActivity"></activity>
     </application>
 
 </manifest>

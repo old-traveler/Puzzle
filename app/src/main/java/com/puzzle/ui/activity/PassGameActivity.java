@@ -24,15 +24,20 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.puzzle.R;
 import com.puzzle.adapter.GameAdapter;
+import com.puzzle.bean.GameTime;
 import com.puzzle.bean.Share;
 import com.puzzle.util.CommonUtils;
 import com.puzzle.view.GameDividerItemDecoration;
 import com.zxy.tiny.callback.FileCallback;
 
 import java.io.File;
+import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
@@ -58,6 +63,7 @@ public class PassGameActivity extends BaseActivity {
         setToolBar(R.id.tb_game);
         handler = new Handler();
         progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("加载中。。。");
         runnable = new CountDownRunnable();
         initView();
     }
@@ -94,8 +100,8 @@ public class PassGameActivity extends BaseActivity {
         type = bundle.getString("type");
         Log.e("TAG",type);
         level = bundle.getInt("level");
-        tv_game_title.setText("第"+level+"关");
         if (type.equals("pass")){
+            tv_game_title.setText("第"+level+"关");
             int n = Math.min(6,level/2+2);
             int resId = bundle.getInt("resId");
             rcv_game.setLayoutManager(new GridLayoutManager(PassGameActivity.this,n));
@@ -103,19 +109,25 @@ public class PassGameActivity extends BaseActivity {
             rcv_game.setAdapter(gameAdapter);
             initEvent();
         }else if (type.equals("arena")){
+            tv_game_title.setText("擂台模式");
             time = bundle.getInt("time");
             tv_time.setText("剩余时间："+time+"秒");
             Glide.with(this).load(bundle.getString("imageUrl")).asBitmap().into(new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                    Log.e("TAG","level:"+level);
                     rcv_game.setLayoutManager(new GridLayoutManager(PassGameActivity.this,level));
                     gameAdapter = new GameAdapter(CommonUtils.getPuzzleFragment(resource,false,level),level);
-
                     rcv_game.setAdapter(gameAdapter);
                     initEvent();
                 }
             });
+
+        }else {
+            tv_game_title.setText("挑战模式");
+            rcv_game.setLayoutManager(new GridLayoutManager(PassGameActivity.this,2));
+            gameAdapter = new GameAdapter(CommonUtils.getPuzzleFragment(getResources(),R.mipmap.level_2,2),2);
+            rcv_game.setAdapter(gameAdapter);
+            initEvent();
         }
 
 
@@ -138,6 +150,10 @@ public class PassGameActivity extends BaseActivity {
                 }else if (type.equals("arena")){
                     normalDialog.setTitle("恭喜您夺擂成功！");
                     normalDialog.setMessage("获得"+getIntent().getExtras().getInt("integral")+"积分");
+                }else {
+                    queryResult();
+                    iv_state.setClickable(false);
+                    return;
                 }
                 normalDialog.setPositiveButton("确定",
                         null);
@@ -169,6 +185,61 @@ public class PassGameActivity extends BaseActivity {
                         });
                 iv_state.setClickable(false);
                 normalDialog.show();
+            }
+        });
+    }
+
+    private void queryResult() {
+        progressDialog.show();
+        final GameTime gameTime = new GameTime();
+        gameTime.setUser(CommonUtils.getUser());
+        gameTime.setTime(System.currentTimeMillis());
+        gameTime.save(new SaveListener<String>() {
+            @Override
+            public void done(String s, BmobException e) {
+                if (e==null){
+                    BmobQuery<GameTime> query = new BmobQuery<>();
+                    BmobUser user = new BmobUser();
+                    user.setObjectId(getIntent().getExtras().getString("battler"));
+                    query.addWhereEqualTo("user",user);
+                    query.setLimit(1);
+                    query.order("-createdAt");
+                    query.findObjects(new FindListener<GameTime>() {
+                        @Override
+                        public void done(List<GameTime> list, BmobException e) {
+                            progressDialog.dismiss();
+                            if (e==null){
+                                boolean isWin;
+                                if (list.size()==1){
+                                    if (list.get(0).getTime()<gameTime.getTime()){
+                                        isWin = gameTime.getTime()-list.get(0).getTime()>=100000;
+                                    }else {
+                                        isWin = true;
+                                    }
+                                }else {
+                                    isWin = true;
+                                }
+                                final AlertDialog.Builder normalDialog =
+                                        new AlertDialog.Builder(PassGameActivity.this);
+                                if (isWin){
+                                    normalDialog.setTitle("恭喜您击败对手！");
+                                    normalDialog.setMessage("获得"+50+"积分");
+                                }else {
+                                    normalDialog.setTitle("您失败了！");
+                                    normalDialog.setMessage("失去"+50+"积分");
+                                }
+                                normalDialog.setPositiveButton("确定",
+                                        null);
+                                normalDialog.show();
+                            }else {
+                                Toast.makeText(PassGameActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }else {
+                    progressDialog.dismiss();
+                    Toast.makeText(PassGameActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -266,6 +337,14 @@ public class PassGameActivity extends BaseActivity {
                 }else if(type.equals("arena")){
                     normalDialog.setTitle("夺擂失败");
                     normalDialog.setMessage("您在规定时间内未能完成任务");
+                }else {
+                    normalDialog.setTitle("您失败了！");
+                    normalDialog.setMessage("失去"+50+"积分");
+                    normalDialog.setPositiveButton("确定",
+                            null);
+                    iv_state.setClickable(false);
+                    normalDialog.show();
+                    return;
                 }
                 normalDialog.setPositiveButton("继续挑战",
                         new DialogInterface.OnClickListener() {

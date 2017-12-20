@@ -119,8 +119,15 @@ public class CommonUtils {
         return splitBitmap(zoomBitmap(bitmap,true),n);
     }
 
-    public static List<Bitmap> getPuzzleFragment(Bitmap bitmap,boolean is,int n){
-        return splitBitmap(zoomBitmap(bitmap,is),n);
+    /**
+     *
+     * @param bitmap
+     * @param isRecycle
+     * @param n
+     * @return
+     */
+    public static List<Bitmap> getPuzzleFragment(Bitmap bitmap,boolean isRecycle,int n){
+        return splitBitmap(zoomBitmap(bitmap,isRecycle),n);
     }
 
     /**
@@ -354,6 +361,10 @@ public class CommonUtils {
         Tiny.FileCompressOptions options = new Tiny.FileCompressOptions();
         options.quality = 50;
         Tiny.getInstance().source(path).asFile().withOptions(options).compress(fileCallback);
+    }
+
+    public static boolean hasLogined(){
+        return BmobUser.getCurrentUser() != null;
     }
 
 }
