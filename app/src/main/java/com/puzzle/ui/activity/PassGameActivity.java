@@ -56,6 +56,20 @@ public class PassGameActivity extends BaseActivity {
     LinearLayout layout;
     ProgressDialog progressDialog;
 
+    boolean isCurrent;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isCurrent = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isCurrent = false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,14 +156,21 @@ public class PassGameActivity extends BaseActivity {
             }
             @Override
             public void gameOver() {
+                int lev= getIntent().getExtras().getInt("level");
                 final AlertDialog.Builder normalDialog =
                         new AlertDialog.Builder(PassGameActivity.this);
                 if (type.equals("pass")){
                     normalDialog.setTitle("恭喜您成功闯关！");
-                    normalDialog.setMessage("获得"+(time*level*tipsSize)+"积分");
+                    if (CommonUtils.getCurrentLevel()<lev){
+                        CommonUtils.setCurrentLevel(lev);
+                        normalDialog.setMessage("获得"+(time*level*tipsSize)+"积分");
+                        CommonUtils.setCurrentIntegral(time*level*tipsSize);
+                    }
+
                 }else if (type.equals("arena")){
                     normalDialog.setTitle("恭喜您夺擂成功！");
                     normalDialog.setMessage("获得"+getIntent().getExtras().getInt("integral")+"积分");
+                    CommonUtils.setCurrentIntegral(getIntent().getExtras().getInt("integral"));
                 }else {
                     queryResult();
                     iv_state.setClickable(false);
@@ -224,9 +245,11 @@ public class PassGameActivity extends BaseActivity {
                                 if (isWin){
                                     normalDialog.setTitle("恭喜您击败对手！");
                                     normalDialog.setMessage("获得"+50+"积分");
+                                    CommonUtils.setCurrentIntegral(50);
                                 }else {
                                     normalDialog.setTitle("您失败了！");
                                     normalDialog.setMessage("失去"+50+"积分");
+                                    CommonUtils.setCurrentIntegral(-50);
                                 }
                                 normalDialog.setPositiveButton("确定",
                                         null);
@@ -326,7 +349,7 @@ public class PassGameActivity extends BaseActivity {
                 time--;
                 tv_time.setText("剩余时间："+time+"秒");
                 countDown();
-            }else if (time==1){
+            }else if (time==1&&isCurrent){
                 tv_time.setText("剩余时间："+0+"秒");
                 gameAdapter.isGameOver =true;
                 AlertDialog.Builder normalDialog =
@@ -340,6 +363,7 @@ public class PassGameActivity extends BaseActivity {
                 }else {
                     normalDialog.setTitle("您失败了！");
                     normalDialog.setMessage("失去"+50+"积分");
+                    CommonUtils.setCurrentIntegral(-50);
                     normalDialog.setPositiveButton("确定",
                             null);
                     iv_state.setClickable(false);

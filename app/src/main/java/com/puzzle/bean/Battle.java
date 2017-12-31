@@ -8,7 +8,6 @@ import cn.bmob.v3.BmobUser;
 
 public class Battle extends BmobObject{
 
-
     private long time;
 
     private BmobUser user;

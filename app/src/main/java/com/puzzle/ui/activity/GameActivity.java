@@ -74,6 +74,7 @@ public class GameActivity extends BaseActivity {
     TextView tv_game_title;
     LinearLayout layout;
     ProgressDialog progressDialog;
+    public boolean isCurrent = true;
 
 
     @Override
@@ -212,7 +213,7 @@ public class GameActivity extends BaseActivity {
             case CAMERA_WITH_DATA:
                 final Bitmap photo = data.getParcelableExtra("data");
                 if (photo != null) {
-                    GameAdapter adapter ;
+                    GameAdapter adapter;
                     if (type.equals("guess")){
                         adapter =new GameAdapter(CommonUtils.getPuzzleFragment(photo,level),true,level);
                     }else {
@@ -222,7 +223,6 @@ public class GameActivity extends BaseActivity {
                     beginGame(adapter);
                 }
         }
-
     }
 
     public void beginGame(GameAdapter adapter){
@@ -346,7 +346,7 @@ public class GameActivity extends BaseActivity {
 
         @Override
         public void run() {
-            if (time>MAX_TIME){
+            if (time>MAX_TIME&&isCurrent){
                 gameAdapter.isGameOver = true;
                 final AlertDialog.Builder normalDialog =
                         new AlertDialog.Builder(GameActivity.this);
@@ -382,6 +382,18 @@ public class GameActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isCurrent = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isCurrent = false;
+    }
+
     private void showCustomizeDialog(final String path) {
         AlertDialog.Builder customizeDialog =
                 new AlertDialog.Builder(this);
@@ -404,9 +416,9 @@ public class GameActivity extends BaseActivity {
                             public void done(String s, BmobException e) {
                                 progressDialog.dismiss();
                                 if (e==null){
-                                    Toast.makeText(GameActivity.this, "分享成功", Toast.LENGTH_SHORT).show();
+                                    showToast("分享成功");
                                 }else {
-                                    Toast.makeText(GameActivity.this, "分享失败", Toast.LENGTH_SHORT).show();
+                                    showToast("分享失败");
                                 }
                             }
                         });

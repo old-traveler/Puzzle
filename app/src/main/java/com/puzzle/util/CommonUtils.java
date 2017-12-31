@@ -1,6 +1,7 @@
 package com.puzzle.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -367,4 +368,30 @@ public class CommonUtils {
         return BmobUser.getCurrentUser() != null;
     }
 
+
+    public static void setCurrentLevel(int level){
+        SharedPreferences.Editor editor = PuzzleApplication.getContext()
+                .getSharedPreferences("levels",Context.MODE_PRIVATE).edit();
+        editor.putInt("level",level);
+        editor.commit();
+    }
+
+    public static int getCurrentLevel(){
+        SharedPreferences preferences =PuzzleApplication.getContext()
+                .getSharedPreferences("levels",Context.MODE_PRIVATE);
+        return preferences.getInt("level",0);
+    }
+
+    public static void setCurrentIntegral(int integral){
+        SharedPreferences.Editor editor = PuzzleApplication.getContext()
+                .getSharedPreferences("puzzle",Context.MODE_PRIVATE).edit();
+        editor.putInt("integral",integral+getCurrentIntegral());
+        editor.commit();
+    }
+
+    public static int getCurrentIntegral(){
+        SharedPreferences preferences = PuzzleApplication.getContext()
+                .getSharedPreferences("puzzle",Context.MODE_PRIVATE);
+        return preferences.getInt("integral",0);
+    }
 }

@@ -90,25 +90,11 @@
             android:layout_width="match_parent"
             android:layout_height="1px"/>
         <TextView
-            android:id="@+id/tv_game_record"
-            android:gravity="center"
-            android:textSize="15sp"
-            android:textColor="@color/white"
-            android:text="游戏记录"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"/>
-        <View
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:background="@color/white_gray"
-            android:layout_width="match_parent"
-            android:layout_height="1px"/>
-        <TextView
             android:id="@+id/tv_bgm"
             android:gravity="center"
             android:textSize="15sp"
             android:textColor="@color/white"
-            android:text="背景音乐：开"
+            android:text="背景音乐：关"
             android:layout_width="match_parent"
             android:layout_height="50dp"/>
         <View

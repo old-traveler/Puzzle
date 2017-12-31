@@ -1,6 +1,7 @@
 package com.puzzle.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,7 @@ public class PassActivity extends BaseActivity {
     TextView level;
     TextView state;
     Button btn_begin;
+    public int passLevel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,16 @@ public class PassActivity extends BaseActivity {
         vp_pass = findViewById(R.id.vp_pass);
         setToolBar(R.id.tb_pass);
         initView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        passLevel = CommonUtils.getCurrentLevel();
+        if (passLevel>=vp_pass.getCurrentItem()+1){
+            state.setText("已解锁");
+            state.setTextColor(Color.parseColor("#52f910"));
+        }
     }
 
     private void initView() {
@@ -71,6 +83,16 @@ public class PassActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 level.setText("第"+(position+1)+"关");
+                if (position<passLevel){
+                    state.setText("已解锁");
+                    btn_begin.setClickable(true);
+                    state.setTextColor(Color.parseColor("#52f910"));
+                }else {
+                    state.setText("未解锁");
+                    state.setTextColor(Color.parseColor("#ca0d20"));
+                    btn_begin.setClickable(false);
+                }
+
             }
 
             @Override

@@ -9,12 +9,12 @@ import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.allenliu.circlemenuview.CircleMenuView;
-import com.puzzle.bean.Arena;
-import com.puzzle.bean.Share;
+
 import com.puzzle.ui.activity.ArenaActivity;
 import com.puzzle.ui.activity.BaseActivity;
 import com.puzzle.ui.activity.BattleActivity;
@@ -22,7 +22,12 @@ import com.puzzle.ui.activity.GameActivity;
 import com.puzzle.ui.activity.LoginActivity;
 import com.puzzle.ui.activity.PassActivity;
 import com.puzzle.ui.activity.ShareActivity;
+import com.puzzle.util.BackgroundMusic;
 import com.puzzle.util.CommonUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import cn.bmob.v3.BmobUser;
 
@@ -33,6 +38,9 @@ public class MainActivity extends BaseActivity {
     TextView tv_switch_account;
     ImageView iv_exit;
     boolean isLogin =false;
+    boolean isplay = true;
+    TextView tv_point;
+    TextView tv_bgm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,21 +48,29 @@ public class MainActivity extends BaseActivity {
         setToolBar(R.id.tb_main);
         initToolBarLeft(R.mipmap.more);
         initView();
+        tv_point = findViewById(R.id.tv_point);
         initEvent();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tv_point.setText("您的积分："+(CommonUtils.getCurrentIntegral()+100));
+    }
+
     private void initView() {
+        tv_bgm = findViewById(R.id.tv_bgm);
         drawerLayout = findViewById(R.id.dl_main);
         circleMenuLayout =findViewById(R.id.view);
         iv_exit = findViewById(R.id.iv_exit);
-        iv_exit.setOnClickListener(new View.OnClickListener() {
+        iv_exit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.exit(0);
             }
         });
         tv_switch_account = findViewById(R.id.tv_switch_account);
-        tv_switch_account.setOnClickListener(new View.OnClickListener() {
+        tv_switch_account.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
@@ -103,6 +119,32 @@ public class MainActivity extends BaseActivity {
             isLogin = true;
             tv_name.setText(BmobUser.getCurrentUser().getUsername());
         }
+
+
+        BackgroundMusic.getInstance(this).setBackgroundVolume(50);
+        BackgroundMusic.getInstance(this).playBackgroundMusic("bgm.mp3",true);
+
+
+
+        tv_bgm.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isplay){
+                    tv_bgm.setText("背景音乐：开");
+                    BackgroundMusic.getInstance(MainActivity.this).pauseBackgroundMusic();
+                }else {
+                    BackgroundMusic.getInstance(MainActivity.this).resumeBackgroundMusic();
+                    tv_bgm.setText("背景音乐：关");
+                }
+                isplay = !isplay;
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        BackgroundMusic.getInstance(this).end();
     }
 
     public void tips(){
@@ -121,11 +163,7 @@ public class MainActivity extends BaseActivity {
         normalDialog.show();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main,menu);
-        return true;
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -134,8 +172,6 @@ public class MainActivity extends BaseActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             }
-        }else  if (item.getItemId() == R.id.rank){
-            Toast.makeText(this, "排行榜", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -166,4 +202,6 @@ public class MainActivity extends BaseActivity {
             public void onDrawerStateChanged(int newState) {}
         });
     }
+
+
 }
